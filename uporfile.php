@@ -1,8 +1,6 @@
 <?php
 session_start();
 $usuario = $_SESSION['usuario'];
-//$imagen = $_SESSION['imgp'];
-$contraseña = $_SESSION['pass'];
 $ide= $_SESSION['id'];
 $estado = $_SESSION['admins'];
 $nombre = $_SESSION['nombre'];
@@ -129,7 +127,7 @@ switch($estado){
                 </table>
                 <tr>            
                     <form>
-                        <button type="sumbit">Realizar cambios</button>
+                        <button type="submit">Realizar cambios</button>
                     </form>
                     </tr>
             </div>
@@ -140,13 +138,29 @@ switch($estado){
             <article id="tab3">
             <h2>Agregar Productos</h2>
             <hr>
+            <?php
+            if(isset($_GET['action'])){
+                if($_GET['action'] == 'RegistroExitoso')
+                    echo '<div class="alert alert-success">Producto agregado correctamente.</div>';
+                if($_GET['action'] == 'completo_elim')
+                    echo '<div class="alert alert-info">Producto eliminado correctamente.</div>';
+            }
+            if(isset($_GET['error'])){
+                if($_GET['error'] == 'imagen_requerida')
+                    echo '<div class="alert alert-danger">Debes seleccionar una imagen.</div>';
+                if($_GET['error'] == 'tipo_imagen_invalido')
+                    echo '<div class="alert alert-danger">Tipo de imagen no permitido. Usa jpg, png, gif o jpeg.</div>';
+                if($_GET['error'] == 'error_base_datos')
+                    echo '<div class="alert alert-danger">Error al realizar la operacion en la base de datos.</div>';
+            }
+            ?>
                 <form action="includes/fuctions/alta.php" method="post" enctype="multipart/form-data">
                     <label>Imagen del Productos</label><input name="p_img" type="file" class=""/> 
                     <label>Nombre:</label> <input name="n_producto" type="text"/>
                     <label>Descripcion:</label> <textarea  name="d_producto"></textarea>
                     <label>Precio:</label> <input type="numeric" name="p_producto"/>
                     <label>Etiquetas:</label> <input type="text" name="etiquetas"/>
-                    <button type="sumbit">Agregar producto</button>
+                    <button type="submit" name="submit">Agregar producto</button>
                 </form>
             <h2>Dar de baja productos</h2>
             <hr>
@@ -161,7 +175,7 @@ switch($estado){
                         <?php
                     try{
             require_once('includes/fuctions/db.php');
-            $sql = " SELECT producto, precio FROM productos";
+            $sql = " SELECT id_producto, producto, precio FROM productos";
             $resultado = $conn->query($sql);
         }catch(\Exception $e){
             echo $e->getMessage();
@@ -174,6 +188,7 @@ switch($estado){
                             $fproductosa= array();
                             while($productos = $resultado->fetch_assoc()){
                                 $producto = array(
+                                    'Id'      => $productos['id_producto'],
                                     'Producto' => $productos['producto'],
                                     'Precio' => $productos['precio'],
                                     );
@@ -185,7 +200,7 @@ switch($estado){
 						<td><?php echo $producto["Precio"]; ?></td>
                         <td>
                             <form action="includes/fuctions/eliminardebase.php" method="post">
-                            <button type="submit" name="btn_eliminar" value="<?php echo $producto["Producto"] ?>" class="remover-carrito"><i class="crossn fa fa-times-circle"></i></button>
+                            <button type="submit" name="btn_eliminar" value="<?php echo htmlspecialchars($producto['Id']); ?>" class="remover-carrito"><i class="crossn fa fa-times-circle"></i></button>
                             </form>
                         </td>
 					</tr>
@@ -196,7 +211,7 @@ switch($estado){
 
             </article>
             <form action="includes/fuctions/logout.php" method="POST">
-            <button type="sumbit">Cerrar sesion</button>
+            <button type="submit">Cerrar sesion</button>
             </form>
        </div>
     </div>
@@ -224,15 +239,14 @@ switch($estado){
                 </div>
             </article>
             <form action="includes/fuctions/logout.php" method="POST">
-            <button type="sumbit">Cerrar sesion</button>
+            <button type="submit">Cerrar sesion</button>
             </form>
 
     <?php break;
-    default: 
-    var_dump($_SESSION);?>
-<h2>Ocurrio un error</h2>
+    default: ?>
+<h2>Ocurrio un error al cargar el perfil.</h2>
 <form action="includes/fuctions/logout.php" method="POST">
-            <button type="sumbit">Cerrar sesion</button>
+            <button type="submit">Cerrar sesion</button>
             </form>
     <?php break;
 

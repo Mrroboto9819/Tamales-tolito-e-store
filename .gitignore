@@ -1,0 +1,11 @@
+# Credenciales y configuración sensible
+includes/fuctions/db.php
+.env
+*.env
+
+# OS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
